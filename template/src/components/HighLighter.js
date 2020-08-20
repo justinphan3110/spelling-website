@@ -75,14 +75,15 @@ export default class HighLighter extends Component {
         // const element = document.getElementById("mainText"+documentID)
         const range = document.createRange();
         const node = document.getElementById("mainText"+documentID)
-        console.log("node", node);
+       
 
         range.setStart(node, 0)
 
         if(e.detail >= 3 || this.state.popoverOpen) return 
         const selectionObj = (window.getSelection && window.getSelection());
         const selection = selectionObj.toString().trim();
-
+        
+        console.log("node", selectionObj);
 
         const anchorNode = selectionObj.anchorNode;
         const focusNode = selectionObj.focusNode;

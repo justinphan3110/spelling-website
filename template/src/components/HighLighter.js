@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Popover, 
+import { Button, Popover, UncontrolledPopover,
         PopoverHeader, 
         PopoverBody, Badge, Form, FormGroup, Label, 
         Input  } from 'reactstrap';
@@ -231,7 +231,7 @@ export default class HighLighter extends Component {
 
         let suggest = this.suggestContext()
 
-        return <Popover style={{"top": "200%"}} placement="bottom" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
+        return <UncontrolledPopover trigger="click" placement="bottom" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
                                     <PopoverHeader>
                                         <Form onSubmit={this.handleSubmitMistake.bind(this)}>
                                         <FormGroup>
@@ -250,7 +250,7 @@ export default class HighLighter extends Component {
                                     </PopoverHeader>
 
                                     <PopoverBody>{suggest}</PopoverBody>
-                </Popover > 
+                </UncontrolledPopover > 
     }
 
     clickWord() {

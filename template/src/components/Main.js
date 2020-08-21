@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import input from '../data/model_corrected.json'
 import CheckedItem from './CheckedItem'
+import { CSVLink, CSVDownload } from "react-csv";
 
 export default class Main extends Component {
     constructor() {
@@ -11,7 +12,8 @@ export default class Main extends Component {
         }
 
         this.addMistakeAndCorrection = this.addMistakeAndCorrection.bind(this)
-        this.modifySuggestion = this.modifySuggestion.bind(this)
+        this.deleteSuggestion = this.deleteSuggestion.bind(this)
+        this.deleteMistake=this.deleteMistake.bind(this)
     }
 
     componentDidMount() {
@@ -81,14 +83,45 @@ export default class Main extends Component {
         });
     }
 
-    modifySuggestion(index, start_offset, currentSuggestion, newSuggestion, newScore) {
-        let {mistakes} = data[index]
-        let mistakeItem = mistakes.find(mistake => mistake.start_offset == start_offset);
+    // modifySuggestion(index, start_offset, currentSuggestion, newSuggestion, newScore) {
+    //     let {mistakes} = data[index]
+    //     let mistakeItem = mistakes.find(mistake => mistake.start_offset == start_offset);
 
-        let {suggest} = mistakeItem;
-        let suggestItem = suggest.find(sg => sg[0] == currentSuggestion)
-        suggestItem[0] = newSuggestion
-        suggesItem[1] = newScore
+    //     let {suggest} = mistakeItem;
+    //     let suggestItem = suggest.find(sg => sg[0] == currentSuggestion)
+    //     suggestItem[0] = newSuggestion
+    //     suggesItem[1] = newScore
+    // }
+
+    deleteSuggestion(index, start_offset, suggestionText) {
+        let {data} = this.state
+        let {mistakes} = data[index]
+
+        let mistakeItem = mistakes.find(mistake => mistake.start_offset == start_offset);
+    
+        let {suggest} = mistakeItem
+ 
+        suggest = suggest.filter((s) => s[0] != suggestionText)
+        mistakeItem.suggest = suggest
+
+        this.setState( {
+            data
+        });
+    }
+
+    deleteMistake(index, start_offset) {
+        let {data} = this.state
+        let {mistakes} = data[index]
+
+        mistakes = mistakes.filter((m) => m.start_offset != start_offset)
+        data[index].mistakes = mistakes
+
+        console.log(data[index])
+        
+        this.setState( {
+            data
+        });
+        
     }
 
     render() {
@@ -101,13 +134,21 @@ export default class Main extends Component {
                                 text={item.text} 
                                 mistakes={item.mistakes}
                                 addMistakeAndCorrection={this.addMistakeAndCorrection}
+                                deleteSuggestion={this.deleteSuggestion}
+                                deleteMistake={this.deleteMistake}
                     />
         });
 
         return (
-            <div>
-                {items}
-            </div>
+            <React.Fragment>
+                <h1>
+                <CSVLink data={this.state.data}>Download me</CSVLink>;
+                </h1>
+                <div>
+                    {items}
+                </div>
+            </React.Fragment>
+            
         )
     }
 }

@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+#my-popover {
+  left: -169px!important;
+}

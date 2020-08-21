@@ -68,30 +68,31 @@ export default class HighLighter extends Component {
     }
     
     toggle() {
+        console.log("toggle")
         this.setState( {
             popoverOpen : ! this.state.popoverOpen,
             suggestion : ''
         })
     }
 
-    getCaretCharacterOffsetWithin(element) {
+    getCaretCharacterOffsetWithin(element, sel) {
         var caretOffset = 0;
         var doc = element.ownerDocument || element.document;
         var win = doc.defaultView || doc.parentWindow;
-        var sel;
         if (typeof win.getSelection != "undefined") {
-            sel = win.getSelection();
             if (sel.rangeCount > 0) {
                 var range = win.getSelection().getRangeAt(0);
                 var preCaretRange = range.cloneRange();
                 preCaretRange.selectNodeContents(element);
+                
                 preCaretRange.setEnd(range.endContainer, range.endOffset);
-                caretOffset = preCaretRange.toString().length;
+                caretOffset = preCaretRange.toString().trim().length;
             }
         } else if ( (sel = doc.selection) && sel.type != "Control") {
             var textRange = sel.createRange();
             var preCaretTextRange = doc.body.createTextRange();
             preCaretTextRange.moveToElementText(element);
+            console.log("textRange ", textRange)
             preCaretTextRange.setEndPoint("EndToEnd", textRange);
             caretOffset = preCaretTextRange.text.length;
         }
@@ -102,7 +103,6 @@ export default class HighLighter extends Component {
         const{documentID} = this.state
         e.preventDefault();
     
-
         if(e.detail >= 3 || this.state.popoverOpen) return 
         const selectionObj = (window.getSelection && window.getSelection());
         const selection = selectionObj.toString().trim();
@@ -143,8 +143,8 @@ export default class HighLighter extends Component {
         }
 
         // const selectionEnd = selectionStart + selection.length;
-        const selectionEnd =  this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID));
-        selectionStart = this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID)) - selection.length;
+        const selectionEnd =  this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID), selectionObj);
+        selectionStart = this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID), selectionObj) - selection.length;
 
         const first = this.state.text.slice(0, selectionStart);
         const middle = this.state.text.slice(selectionStart, selectionEnd);
@@ -152,8 +152,8 @@ export default class HighLighter extends Component {
 
         this.setState({
             selection,
-            anchorNode,
-            focusNode,
+            // anchorNode,
+            // focusNode,
             selectionStart,
             selectionEnd,
             first,
@@ -202,10 +202,11 @@ export default class HighLighter extends Component {
                         outline
                         value={suggest[0]}
                         color="success"
+                        onClick={this.handleDeleteSuggestion.bind(this)}
                     >
                         {suggest[0]}
-                        <Badge color="secondary">{Math.round(suggest[1]*100)/100}</Badge>
-                    </Button >
+                        ---{Math.round(suggest[1]*100)/100}
+                    </Button>
                     </span>
             suggestButtons.push(b)
         })
@@ -216,13 +217,30 @@ export default class HighLighter extends Component {
     }
 
     handleSubmitMistake(e) {
+        
         const {documentIndex, addMistakeAndCorrection} = this.props;
         const {suggestion, middle, selectionStart} = this.state
         e.preventDefault()
 
-        console.log("handle submit mistake " + suggestion)
         addMistakeAndCorrection(documentIndex, middle, selectionStart, suggestion)
+    }
 
+    handleDeleteSuggestion(e) {
+        const {documentIndex, deleteSuggestion} = this.props;
+        const {suggestion, middle, selectionStart} = this.state
+
+        deleteSuggestion(documentIndex, selectionStart, e.target.value);
+    }
+
+    handleDeleteMistake(e) {
+        const {documentIndex, deleteMistake} = this.props;
+        const {suggestion, middle, selectionStart} = this.state;        
+        deleteMistake(documentIndex, selectionStart)
+        this.setState({
+            selection: ''
+        })
+        this.toggle()
+        // this.toggle()
     }
 
     popOver() {
@@ -231,11 +249,15 @@ export default class HighLighter extends Component {
 
         let suggest = this.suggestContext()
 
-        return <UncontrolledPopover trigger="click" placement="bottom" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
+        return <UncontrolledPopover trigger="legacy" 
+                        placement="top" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
                                     <PopoverHeader>
                                         <Form onSubmit={this.handleSubmitMistake.bind(this)}>
                                         <FormGroup>
                                             <Label for="exampleEmail">{this.state.middle}</Label>
+                                            <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
+                                                color="danger"
+                                                size="sm">-</Button>
                                             <Input placeholder="add an suggestion" value={this.state.suggestion} 
                                                 onChange={(e) => this.setState({
                                                 suggestion: e.target.value})} />
@@ -253,9 +275,6 @@ export default class HighLighter extends Component {
                 </UncontrolledPopover > 
     }
 
-    clickWord() {
-        console.log("click " + this.state.middle)
-    }
 
     BoldedText(text, mistakes) {
         // const {mistakes} = this.state;
@@ -326,9 +345,7 @@ export default class HighLighter extends Component {
                         {this.state.first}
                     </span>                    
                     <span  
-                        onMouseEnter={this.toggle.bind(this)}
                         data-order="middle"
-                        onMouseEnter={this.toggle.bind(this)}
                         >
 
                         <Button onClick={this.toggle.bind(this)}

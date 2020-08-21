@@ -16,13 +16,19 @@ export default class CheckedItem extends Component {
 
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevStates) {
         if (this.props.text !== prevProps.text || this.props.mistakes != prevProps.mistakes) {
             this.setState({
                 text: this.props.text, 
                 mistakes: this.props.mistakes
             });
             
+        }
+
+        if(this.state.mistakes !== prevStates.mistakes) {
+            this.setState({
+                mistakes: this.state.mistakes
+            })
         }
     }
 
@@ -117,6 +123,8 @@ export default class CheckedItem extends Component {
                             text={text}
                             mistakes={mistakes}
                             addMistakeAndCorrection={this.props.addMistakeAndCorrection}
+                            deleteSuggestion={this.props.deleteSuggestion}
+                            deleteMistake={this.props.deleteMistake}
                             documentIndex={this.props.documentIndex}
                             documentID={documentID}
                             selectionHandler={this.selectionHandler.bind(this)}

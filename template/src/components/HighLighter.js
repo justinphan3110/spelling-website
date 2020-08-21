@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Popover, PopoverHeader, PopoverBody, Badge  } from 'reactstrap';
+import { Button, Popover, 
+        PopoverHeader, 
+        PopoverBody, Badge, Form, FormGroup, Label, 
+        Input  } from 'reactstrap';
 
 const propTypes = {
     text: PropTypes.string.isRequired,
@@ -35,17 +38,20 @@ export default class HighLighter extends Component {
             last: '',
 
             popoverOpen: false,
-            documentID: props.documentID
+            documentID: props.documentID,
             // const popOverID = Math.random().toString(36).substring(7);
 
+            suggestion: ''
         };
         this.onMouseUpHandler = this.onMouseUpHandler.bind(this);
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.text !== prevProps.text) {
+        if (this.props.text !== prevProps.text || this.props.mistakes != prevProps.mistakes || this.props.middle != prevProps.middle) {
             this.setState({
-                text: this.props.text
+                text: this.props.text, 
+                mistakes: this.props.mistakes,
+                middle: this.props.middle
             });
             
         }
@@ -63,27 +69,43 @@ export default class HighLighter extends Component {
     
     toggle() {
         this.setState( {
-            popoverOpen : ! this.state.popoverOpen
+            popoverOpen : ! this.state.popoverOpen,
+            suggestion : ''
         })
     }
 
-
+    getCaretCharacterOffsetWithin(element) {
+        var caretOffset = 0;
+        var doc = element.ownerDocument || element.document;
+        var win = doc.defaultView || doc.parentWindow;
+        var sel;
+        if (typeof win.getSelection != "undefined") {
+            sel = win.getSelection();
+            if (sel.rangeCount > 0) {
+                var range = win.getSelection().getRangeAt(0);
+                var preCaretRange = range.cloneRange();
+                preCaretRange.selectNodeContents(element);
+                preCaretRange.setEnd(range.endContainer, range.endOffset);
+                caretOffset = preCaretRange.toString().length;
+            }
+        } else if ( (sel = doc.selection) && sel.type != "Control") {
+            var textRange = sel.createRange();
+            var preCaretTextRange = doc.body.createTextRange();
+            preCaretTextRange.moveToElementText(element);
+            preCaretTextRange.setEndPoint("EndToEnd", textRange);
+            caretOffset = preCaretTextRange.text.length;
+        }
+        return caretOffset;
+    }
+    
     onMouseUpHandler(e) {
         const{documentID} = this.state
         e.preventDefault();
-        
-        // const element = document.getElementById("mainText"+documentID)
-        const range = document.createRange();
-        const node = document.getElementById("mainText"+documentID)
-       
-
-        range.setStart(node, 0)
+    
 
         if(e.detail >= 3 || this.state.popoverOpen) return 
         const selectionObj = (window.getSelection && window.getSelection());
         const selection = selectionObj.toString().trim();
-        
-        console.log("node", selectionObj);
 
         const anchorNode = selectionObj.anchorNode;
         const focusNode = selectionObj.focusNode;
@@ -120,7 +142,10 @@ export default class HighLighter extends Component {
             }
         }
 
-        const selectionEnd = selectionStart + selection.length;
+        // const selectionEnd = selectionStart + selection.length;
+        const selectionEnd =  this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID));
+        selectionStart = this.getCaretCharacterOffsetWithin(document.getElementById("mainText"+documentID)) - selection.length;
+
         const first = this.state.text.slice(0, selectionStart);
         const middle = this.state.text.slice(selectionStart, selectionEnd);
         const last = this.state.text.slice(selectionEnd);
@@ -171,45 +196,33 @@ export default class HighLighter extends Component {
 
         let suggestButtons = []
         suggests.forEach(suggest => {
-            let b = <Badge 
+            let b = <span><Button 
                         id={documentID + Math.random()}
                         size="sm"
                         outline
                         value={suggest[0]}
-                        // onMouseEnter={}
+                        color="success"
                     >
                         {suggest[0]}
-                    </Badge >
+                        <Badge color="secondary">{Math.round(suggest[1]*100)/100}</Badge>
+                    </Button >
+                    </span>
             suggestButtons.push(b)
         })
+
+        // suggestButtons.push()
 
         return suggestButtons;
     }
 
-    splitSentence(original_test) {
-        const {mistakes} = this.state;
-        
-        var splited_sentence = []
+    handleSubmitMistake(e) {
+        const {documentIndex, addMistakeAndCorrection} = this.props;
+        const {suggestion, middle, selectionStart} = this.state
+        e.preventDefault()
 
-        var left = 0;
-        mistakes.forEach(mistake => {
-            const {text, start_offset, score, suggest} = mistake;
-            
-            var sub = original_test.slice(left, start_offset - 1);
+        console.log("handle submit mistake " + suggestion)
+        addMistakeAndCorrection(documentIndex, middle, selectionStart, suggestion)
 
-
-            left = start_offset + text.length + 1;
-            splited_sentence.push(sub)
-            
-            // var mistakeItem = this.mistakeItem(text, suggest);
-            splited_sentence.push(text)
-        })
-        
-        // console.log("left: " + left  + " ; right: " + original_test.length)
-        if(left < original_test.length)
-            splited_sentence.push(original_test.slice(left, original_test.length));
-        
-        return splited_sentence;
     }
 
     popOver() {
@@ -218,8 +231,23 @@ export default class HighLighter extends Component {
 
         let suggest = this.suggestContext()
 
-        return <Popover placement="bottom" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
-                                    <PopoverHeader>{this.state.middle}</PopoverHeader>
+        return <Popover style={{"top": "200%"}} placement="bottom" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
+                                    <PopoverHeader>
+                                        <Form onSubmit={this.handleSubmitMistake.bind(this)}>
+                                        <FormGroup>
+                                            <Label for="exampleEmail">{this.state.middle}</Label>
+                                            <Input placeholder="add an suggestion" value={this.state.suggestion} 
+                                                onChange={(e) => this.setState({
+                                                suggestion: e.target.value})} />
+                                        </FormGroup>
+                                            
+                                            {/* <Button style={{border: 0, "color": "black", "padding": "5%"}} 
+                                                size="sm" 
+                                                color="success" >
+                                                    +
+                                            </Button> */}
+                                        </Form>
+                                    </PopoverHeader>
 
                                     <PopoverBody>{suggest}</PopoverBody>
                 </Popover > 
@@ -229,14 +257,61 @@ export default class HighLighter extends Component {
         console.log("click " + this.state.middle)
     }
 
+    BoldedText(text, mistakes) {
+        // const {mistakes} = this.state;
+
+        // const textArray = text.split("chính");
+        let textArray = []
+
+        let mistakeIndex = mistakes.map(mistake => {
+            return [mistake.start_offset, mistake.start_offset + mistake.text.length];
+        })
+        
+        mistakeIndex = mistakeIndex.sort( function(a, b) {
+            return (a[0] - b[0]);
+        });
+        
+        let left = 0;
+        let mistakesArray = [];
+        
+        mistakeIndex.map(index => {
+            textArray.push(text.slice(left, index[0]))
+            left = index[1];
+            mistakesArray.push(text.slice(index[0], index[1]));
+        })
+
+        if(left < text.length) {
+            textArray.push(text.slice(left));
+        }
+        
+        // console.log(mistakeIndex)
+        // console.log(textArray)
+        // console.log(mistakesArray)
+
+        return (
+          <span>
+            {textArray.map((item, index) => (
+              <>
+                {item}
+                {index !== textArray.length - 1 && mistakeIndex && (
+                  <span style={{color:"red"}}>{mistakesArray.shift()}</span>
+                )}
+              </>
+            ))}
+          </span>
+      );
+      }
+
     render() {
-        const {documentID} = this.state
+        const {documentID, text , mistakes} = this.state
 
         if (!this.state.selection) {
             return (
                 <React.Fragment>
                 <span id={"mainText"+documentID}
-                    onMouseUp={this.onMouseUpHandler}>{this.splitSentence(this.state.text).map(item => {return <span> {item} </span>})}
+                    onMouseUp={this.onMouseUpHandler}>
+                        {/* {this.splitSentence(this.state.text).map(item => {return <span> {item} </span>})} */}
+                        {this.BoldedText(text, mistakes)}
                 </span>
                 </React.Fragment>
             )
@@ -250,25 +325,22 @@ export default class HighLighter extends Component {
                         data-order="first" >
                         {this.state.first}
                     </span>                    
-                    <span
-                        data-order="middle"
-                        // className={this.props.customClass || "default"}
-                        // id={documentID}
+                    <span  
                         onMouseEnter={this.toggle.bind(this)}
-                        // onClick={this.toggle.bind(this)}
+                        data-order="middle"
+                        onMouseEnter={this.toggle.bind(this)}
                         >
 
                         <Button onClick={this.toggle.bind(this)}
                                 onMouseEnter={this.toggle.bind(this)}
-                                style={{border: 0, "boxShadow": 'none', "color": "black", "padding": "0.4%"}} 
+                                style={{border: 0, "color": "black", "padding": "0.4%"}} 
                                 outline  
                                 size="sm" 
-                                color="warning" 
+                                color="danger" 
                                 id={documentID}
                             > {this.state.middle} 
                         </Button>
                         
-                        {/* {console.log(documentID, document.getElementById(documentID))} */}
                         {document.getElementById(documentID) && this.state.mistakes && this.state.middle &&
                             this.popOver()    
                         }

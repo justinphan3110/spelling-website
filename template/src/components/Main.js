@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
-import data from '../data/model_corrected.json'
+import input from '../data/model_corrected.json'
 import CheckedItem from './CheckedItem'
 
 export default class Main extends Component {
     constructor() {
         super()
+        
         this.state = {
-            data
+            data: input.body
         }
 
-        this.modifyText = this.modifyText.bind(this)
+        this.addMistakeAndCorrection = this.addMistakeAndCorrection.bind(this)
     }
 
     componentDidMount() {
@@ -50,16 +51,44 @@ export default class Main extends Component {
 
     }
 
+    addMistakeAndCorrection(index, text, start_offset, suggestCorrection) {
+        let { data } = this.state;
+
+
+        let { mistakes } = data[index]
+
+        let existedMistakes = false;
+
+        for(let i = 0; i < mistakes.length && !existedMistakes; i++) {
+            console.log(mistakes[i].start_offset, start_offset)
+            if(mistakes[i].start_offset == start_offset) {
+                let {suggest} = mistakes[i];
+                suggest.push([suggestCorrection, 1]);
+                existedMistakes = true
+            }
+
+        }
+
+        if(!existedMistakes) {
+            data[index].mistakes.push({text, start_offset, score: 1,  suggest: [[suggestCorrection, 1]]});
+        }
+        console.log(data[index])
+
+        this.setState( {
+            data
+        });
+    }
+
     render() {
         
         var index = -1;
-        let items = this.state.data.body.map((item) => {
+        let items = this.state.data.map((item) => {
             index += 1
             return <CheckedItem documentIndex={index} 
                                 documentID={this.makeid(7)} 
                                 text={item.text} 
                                 mistakes={item.mistakes}
-                                modifyText={this.modifyText}
+                                addMistakeAndCorrection={this.addMistakeAndCorrection}
                     />
         });
 

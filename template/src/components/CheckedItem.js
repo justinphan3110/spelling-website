@@ -17,70 +17,19 @@ export default class CheckedItem extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.text !== prevProps.text) {            
+        if (this.props.text !== prevProps.text || this.props.mistakes != prevProps.mistakes) {
             this.setState({
-                text: this.props.text
+                text: this.props.text, 
+                mistakes: this.props.mistakes
             });
             
         }
     }
 
     componentDidMount() {
-
-        let splited_sentence = this.splitSentence()
-        this.setState( {
-            splited_sentence
-        })
     }
 
-    getWordAt (str, pos) {
-
-        // Perform type conversions.
-        str = String(str);
-        pos = Number(pos) >>> 0;
     
-        // Search for the word's beginning and end.
-        var left = str.slice(0, pos + 1).search(/\S+$/),
-            right = str.slice(pos).search(/\s/);
-    
-        // The last word in the string is a special case.
-        if (right < 0) {
-            return str.slice(left);
-        }
-    
-        // Return the word, using the located bounds to extract it from the string.
-        return str.slice(left, right + pos);
-    
-    }
-    
-    splitSentence() {
-        const {mistakes} = this.state;
-        
-        const original_test = this.state.text
-
-        var splited_sentence = []
-
-        var left = 0;
-        mistakes.forEach(mistake => {
-            const {text, start_offset, score, suggest} = mistake;
-            
-            var sub = original_test.slice(left, start_offset - 1);
-
-
-            left = start_offset + text.length + 1;
-            splited_sentence.push(this.arrayofButton(sub))
-            
-            var mistakeItem = this.mistakeItem(text, suggest);
-            splited_sentence.push(mistakeItem)
-        })
-        
-        // console.log("left: " + left  + " ; right: " + original_test.length)
-        if(left < original_test.length)
-            splited_sentence.push(this.arrayofButton(original_test.slice(left, original_test.length)))
-
-        return splited_sentence;
-    }
-
     clickWord(e) {
         console.log("click " + e.target.value)
     }
@@ -164,9 +113,10 @@ export default class CheckedItem extends Component {
                 <Container style={{padding: "1%", width: "auto", backgroundColor: "#FFFFFF"}}>
                         {/* {this.state.splited_sentence} */}
                         <HighLighter 
+                            innerHTML={true}
                             text={text}
                             mistakes={mistakes}
-                            modifyText={this.props.modifyText}
+                            addMistakeAndCorrection={this.props.addMistakeAndCorrection}
                             documentIndex={this.props.documentIndex}
                             documentID={documentID}
                             selectionHandler={this.selectionHandler.bind(this)}

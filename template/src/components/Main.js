@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import input from '../data/model_corrected.json'
 import CheckedItem from './CheckedItem'
+import {Row, Col, Button, Container} from 'reactstrap'
 import { CSVLink, CSVDownload } from "react-csv";
 
 export default class Main extends Component {
@@ -124,6 +125,24 @@ export default class Main extends Component {
         
     }
 
+    download() {
+        const fs = require('fs');
+
+        let data = JSON.stringify(this.state.data);
+        fs.writeFile('student-2.json', data);
+    }
+
+    handleSaveToPC() {
+        const jsonData = this.state.data
+        const fileData = JSON.stringify(jsonData);
+        const blob = new Blob([fileData], {type: "text/plain"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'filename.json';
+        link.href = url;
+        link.click();
+    }
+
     render() {
         
         var index = -1;
@@ -139,10 +158,11 @@ export default class Main extends Component {
                     />
         });
 
+    
         return (
             <React.Fragment>
                 <h1>
-                <CSVLink data={this.state.data}>Download me</CSVLink>;
+                <Button id={"S" + Math.random} onClick={this.handleSaveToPC.bind(this)}>Download me</Button>
                 </h1>
                 <div>
                     {items}

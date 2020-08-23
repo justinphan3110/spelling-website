@@ -23,6 +23,7 @@ import input from '../../data/model_corrected.json'
 import CIcon from '@coreui/icons-react'
 import Main from '../../components/Main';
 import CheckedItem from '../../components/CheckedItem';
+import ReactJson from 'react-json-view'
 
 import { Upload, message, Button } from "antd";
 import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
@@ -261,8 +262,7 @@ export default class Starter extends Component {
         <CRow className="text-center">
           
           <CCol md sm="12" className="mb-sm-2 mb-0 d-md-down-none">
-            <div className="text-muted">Or</div>
-            <strong>Chose a directory to upload</strong>
+            <ReactJson src={this.state.data} theme="monokai" />
           </CCol>
           <CCol md sm="12" className="mb-sm-2 mb-0"> 
           </CCol>

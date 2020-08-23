@@ -262,7 +262,7 @@ export default class Starter extends Component {
         <CRow className="text-center">
           
           <CCol md sm="12" className="mb-sm-2 mb-0 d-md-down-none">
-            <ReactJson src={this.state.data} theme="monokai" />
+            <ReactJson src={this.state.data} theme="hopscotch" />
           </CCol>
           <CCol md sm="12" className="mb-sm-2 mb-0"> 
           </CCol>

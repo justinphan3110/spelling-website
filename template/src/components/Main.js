@@ -162,7 +162,7 @@ export default class Main extends Component {
         return (
             <React.Fragment>
                 <h1>
-                <Button id={"S" + Math.random} onClick={this.handleSaveToPC.bind(this)}>Download me</Button>
+                <Button id={"S" + Math.random} onClick={this.handleSaveToPC.bind(this)}>Download File</Button>
                 </h1>
                 <div>
                     {items}

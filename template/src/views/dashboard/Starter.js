@@ -26,6 +26,7 @@ import CheckedItem from '../../components/CheckedItem';
 
 import { Upload, message, Button } from "antd";
 import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
+import { ppid } from 'process';
 
 
 
@@ -40,6 +41,8 @@ export default class Starter extends Component {
         fileUploadState: '',
 
         uploading: false,
+
+        fileName: 'Default Data',
 
     }
 
@@ -184,6 +187,10 @@ export default class Starter extends Component {
       
       reader.readAsText(info.file.originFileObj);
 
+      this.setState( {
+        fileName: info.file.name
+      })
+
     } else if (status === "error") {
       message.error(`${info.file.name} file upload failed.`);
     }
@@ -223,7 +230,7 @@ export default class Starter extends Component {
         <CCardBody>
         <CRow>
           <CCol sm="5">
-            <h4>Default data</h4>
+            <h4>{this.state.fileName}</h4>
           </CCol>
           <CCol sm="7" className="d-none d-md-block">
             <CRow className="float-right">

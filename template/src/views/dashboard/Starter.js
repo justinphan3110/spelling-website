@@ -5,17 +5,17 @@ import {
   } from 'reactstrap';
 
 import {
-  CBadge,
+  CModal,
   CButton,
-  CButtonGroup,
+  CModalHeader,
   CCard,
   CCardBody,
   CCardFooter,
-  CCardHeader,
+  CModalBody,
   CCol,
-  CProgress,
+  CModalFooter,
   CRow,
-  CCallout
+  CModalTitle
 } from '@coreui/react'
 
 // import input from '.'
@@ -44,6 +44,7 @@ export default class Starter extends Component {
         uploading: false,
 
         fileName: 'Default Data',
+        viewJson: false, 
 
     }
 
@@ -197,6 +198,12 @@ export default class Starter extends Component {
     }
   }
 
+  viewJsonToggle() {
+    this.setState( {
+      viewJson:  ! this.state.viewJson
+    })
+  }
+
 
 
   render() {
@@ -234,7 +241,27 @@ export default class Starter extends Component {
             <h4>{this.state.fileName}</h4>
           </CCol>
           <CCol sm="7" className="d-none d-md-block">
+            
+            
             <CRow className="float-right">
+            <Button onClick={this.viewJsonToggle.bind(this)} danger color="info" className="float-right mr-3">View JSON</Button>
+            <CModal 
+              show={this.state.viewJson} 
+              onClose={this.viewJsonToggle.bind(this)}
+              color="info"
+            >
+              <CModalHeader closeButton>
+                <CModalTitle>{this.state.fileName}</CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                <ReactJson collapsed src={this.state.data} theme="twilight" iconStyle="triangle" />
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="danger" onClick={this.viewJsonToggle.bind(this)}>Close</CButton>
+                <CButton color="info" onClick={this.handleSaveToPC.bind(this)}>Donwload</CButton>
+              </CModalFooter>
+            </CModal>
+
                 <div className="float-right mr-3">
                 <input id="fileUploadButton" type="file" hidden />
                 <Upload
@@ -250,6 +277,8 @@ export default class Starter extends Component {
               <Button type="primary" onClick={this.handleSaveToPC.bind(this)} icon={<DownloadOutlined />} size={'medium'}>
                   Download
               </Button>
+
+
             </CRow>
           </CCol>
         </CRow>
@@ -262,7 +291,6 @@ export default class Starter extends Component {
         <CRow className="text-center">
           
           <CCol md sm="12" className="mb-sm-2 mb-0 d-md-down-none">
-            <ReactJson src={this.state.data} theme="hopscotch" />
           </CCol>
           <CCol md sm="12" className="mb-sm-2 mb-0"> 
           </CCol>

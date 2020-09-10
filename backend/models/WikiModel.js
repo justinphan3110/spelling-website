@@ -1,5 +1,6 @@
 const mongooes = require('mongoose');
 const ObjectId =  mongooes.Schema.ObjectId;
+require('dotenv/config');
 
 
 const wikiSchema = mongooes.Schema({
@@ -27,5 +28,4 @@ const wikiSchema = mongooes.Schema({
         suggest: { type : Array , "default" : [] }}]
 }, {versionKey: false});
 
-
-module.exports = mongooes.model('wiki', wikiSchema, 'wiki');
+module.exports = mongooes.model('wiki', wikiSchema, process.env.WIKI_DOCUMENT_COLLECTION);

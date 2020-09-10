@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {
     Col,
     Row,
+    Pagination, PaginationItem, PaginationLink,
   } from 'reactstrap';
 
 import {
@@ -227,11 +228,51 @@ export default class WikiDocuments extends Component {
         }
       }
     
-      viewJsonToggle() {
+    viewJsonToggle() {
         this.setState( {
-          viewJson:  ! this.state.viewJson
+            viewJson:  ! this.state.viewJson
         })
-      }
+    }
+
+    handlePaginationClick(e, pageNo) {
+        e.preventDefault();
+
+        this.setState({
+            page: pageNo
+        }, () => this.getWikiDocuments())
+    }
+    
+    paginationsGenerate() {
+        const { page } = this.state;
+
+        const start = Math.max(1, page - 10);
+        const end = page + 11;
+        var list = Array(end - start + 1).fill().map((_, idx) => start + idx)
+        return (
+            <Pagination aria-label="Navigation">
+                <PaginationItem disabled={page <= 1}>
+            
+                    <PaginationLink
+                        onClick={e => this.handlePaginationClick(e, 1)}
+                        first
+                        href="#"
+                    />
+            
+                </PaginationItem>
+                {list.map((i) => 
+                    <PaginationItem active={i === page} key={i}>
+                        <PaginationLink onClick={e => this.handlePaginationClick(e, i)} href="#">
+                            {i}
+                        </PaginationLink>
+                    </PaginationItem>
+              )}
+            </Pagination>
+        )
+    }
+
+    range(start, end) {
+        return Array(end - start + 1).fill().map((_, idx) => start + idx)
+    }
     
     
     
@@ -261,12 +302,16 @@ export default class WikiDocuments extends Component {
                                     deleteMistake={this.deleteMistake}
                         />
         });
+
+
+        
     
         return (
             <div className="animated fadeIn">
             <Row>
               <Col  md={{ size: 6, offset: 0 }}>
                 <h3>Vietnamese Spelling Correction</h3>
+                {this.paginationsGenerate()}
               </Col>
             </Row>
     
@@ -313,8 +358,6 @@ export default class WikiDocuments extends Component {
                   <Button type="primary" onClick={this.handleSaveToPC.bind(this)} icon={<DownloadOutlined />} size={'medium'}>
                       Download
                   </Button>
-    
-    
                 </CRow>
               </CCol>
             </CRow>

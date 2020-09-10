@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Row, Col, Button, Container} from 'reactstrap'
+import {Row, Col, Button, } from 'reactstrap'
 import {
     CCard, CCardHeader, CRow, CCol, CBadge, CCardBody, CCardFooter, CButton,
   } from '@coreui/react'
@@ -38,10 +38,6 @@ export default class CheckedItem extends Component {
     componentDidMount() {
     }
 
-    
-    clickWord(e) {
-        console.log("click " + e.target.value)
-    }
 
     arrayofButton(text) {
         var array = text.split(" ");

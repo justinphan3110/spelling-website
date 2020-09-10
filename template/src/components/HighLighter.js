@@ -86,7 +86,7 @@ export default class HighLighter extends Component {
                 preCaretRange.selectNodeContents(element);
                 
                 preCaretRange.setEnd(range.endContainer, range.endOffset);
-                caretOffset = preCaretRange.toString().trim().length;
+                caretOffset = preCaretRange.toString().length;
             }
         } else if ( (sel = doc.selection) && sel.type != "Control") {
             var textRange = sel.createRange();

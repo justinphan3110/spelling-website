@@ -19,7 +19,7 @@ import {
 } from '@coreui/react'
 
 import axios from 'axios';
-import input from '../../data/model_corrected.json'
+// import input from '../../data/model_corrected.json'
 import CheckedItem from '../../components/CheckedItem';
 import ReactJson from 'react-json-view'
 
@@ -31,7 +31,7 @@ export default class WikiDocuments extends Component {
             super()
             
             this.state = {
-                data: input.body,
+                data: [],
         
                 fileUploadState: '',
         
@@ -47,31 +47,38 @@ export default class WikiDocuments extends Component {
         this.addMistakeAndCorrection = this.addMistakeAndCorrection.bind(this)
         this.deleteSuggestion = this.deleteSuggestion.bind(this)
         this.deleteMistake=this.deleteMistake.bind(this)
+        // this.deleteDocs=this.deleteDocs.bind(this)
+        // this.test=this.test.bind(this)
+        // this.deleteDocument=this.deleteDocument.bind(this)
       }
     
-      componentDidUpdate(prevProps) {
-        if (this.props.data !== prevProps.data) {            
-            this.setState({
-                data: this.props.data
-            });
+    //   componentDidUpdate(prevProps, prevState) {
+    //     if (this.state.data !== prevState.data) {            
+    //         this.setState({
+    //             data: this.state.data
+    //         });
             
-        }
-      } 
+    //     }
+    //   } 
 
-      componentDidMount() {
-          this.getWikiDocuments();
-      }
+    componentDidMount() {
+        this.getWikiDocuments();
+    }
 
 
-      getWikiDocuments() {
-          axios.get('http://localhost:3002/wiki/' + this.state.page)
-                .then((response)=>{
-                    this.setState({data: response.data})
-                    // console.log(response.data)
-                })
-      }
-    
-      makeid(length) {
+
+    getWikiDocuments() {
+        // console.log("in get wiki")
+        axios.get('http://localhost:3002/wiki/' + this.state.page)
+            .then((response)=>{
+                this.setState({data: response.data})
+                // console.log(response.data)
+            })
+    }
+
+
+    makeid(length) {
+     
           var result           = '';
           var characters       = 'abcdefghijklmnopqrstuvwxyz';
           var charactersLength = characters.length;
@@ -154,6 +161,19 @@ export default class WikiDocuments extends Component {
           });
           
       }
+
+      deleteDocs(_id) {
+        // console.log(_id) 
+        const newData = this.state.data.filter((item)=> item._id !== _id)
+        axios.delete('http://localhost:3002/wiki/' + _id)
+        .then((response)=>{
+            this.setState({data: newData});
+            // console.log(response.data)
+        }).catch( function (e) {
+            console.log("can not delete docs " + _id)
+        })
+        
+    }
     
       download() {
           const fs = require('fs');
@@ -228,11 +248,14 @@ export default class WikiDocuments extends Component {
                 index += 1
                 return <CheckedItem documentIndex={index} 
                                     documentID={this.makeid(7)} 
+                                    _id={item._id}
                                     current_id={item.current_id}
                                     parent_id={item.parent_id}
                                     page_id={item.page_id}
                                     text={item.text} 
                                     mistakes={item.mistakes}
+
+                                    deleteDocs={this.deleteDocs.bind(this)}
                                     addMistakeAndCorrection={this.addMistakeAndCorrection}
                                     deleteSuggestion={this.deleteSuggestion}
                                     deleteMistake={this.deleteMistake}

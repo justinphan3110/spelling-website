@@ -11,9 +11,9 @@ const wiki = require('../models/WikiModel');
 router.get('/', async (req, res) => {
     console.log("here")
     try{
-        const complains = await wiki.find();
-        console.log(complains)
-        res.json(complains);
+        const queryResults = await wiki.find();
+        console.log(queryResults)
+        res.json(queryResults);
     }catch(err){
         res.json({message:"error"});
     }
@@ -31,15 +31,27 @@ router.get('/:page', async(req, res) => {
     const ids = range(page * pageLimit - pageLimit + 1, page * pageLimit + 1);
     // console.log(ids)
     try{
-        const complain = await wiki.find().where('_id').in(ids).exec();
-        console.log(complain)
-        res.json(complain);
+        const queryResult = await wiki.find().where('_id').in(ids).exec();
+        console.log(queryResult)
+        res.json(queryResult);
     }catch (err) {
         res.json({message: err});
     }
 });
 
 
+router.delete('/:docId', async (req, res) => {
+    console.log("delete docId " + req.params.docId)
+    try {
+        const removed = await wiki.deleteOne({
+            _id: req.params.docId
+        });
+
+        res.json(removed);
+    }catch (err){
+        res.json({message: err});
+    }
+});
 
 
 module.exports = router; 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {Row, Col, Button, Container} from 'reactstrap'
 import {
-    CCard, CCardHeader, CRow, CCol, CBadge,
+    CCard, CCardHeader, CRow, CCol, CBadge, CCardBody, CCardFooter, CButton,
   } from '@coreui/react'
 import HighLighter from './HighLighter';
 
@@ -9,7 +9,7 @@ export default class CheckedItem extends Component {
     constructor(props) {
         super(props);
         
-        const {text, mistakes} = this.props;
+        const {text, mistakes} = props;
 
         this.state = {
             text, 
@@ -109,11 +109,15 @@ export default class CheckedItem extends Component {
           
     }
 
+    handleDeleteDocs() {
+        const {deleteDocs, _id} = this.props;
+        deleteDocs(_id)
+    }
     
 
     render() {
         // console.log(this.state.splited_sentence)
-        const {documentID, current_id, parent_id, page_id} = this.props
+        const {documentID, current_id, parent_id, page_id, _id} = this.props
         const {text, mistakes} = this.state
 
         return (
@@ -123,24 +127,30 @@ export default class CheckedItem extends Component {
                         {/* {this.state.splited_sentence} */}
                         <CCardHeader>
                             <CRow>
-                                <CCol>Current Id: <CBadge color="primary">{current_id}</CBadge></CCol>
-                                <CCol>Page Id: <CBadge color="success">{page_id}</CBadge></CCol>
-                                <CCol>Parent Id: <CBadge color="info">{parent_id}</CBadge></CCol>
+                                <CCol><b>Current Id: </b><CBadge color="primary"><h3>{current_id}</h3></CBadge></CCol>
+                                <CCol><b>Page Id: </b><CBadge color="success"><h3>{page_id}</h3></CBadge></CCol>
+                                <CCol><b>Parent Id:</b> <CBadge color="info"><h3>{parent_id}</h3></CBadge></CCol>
+                                <CButton color="danger" onClick={this.handleDeleteDocs.bind(this)} className="float-right">Delete</CButton>
                             </CRow>
 
                         </CCardHeader>
-                        <HighLighter 
-                            innerHTML={true}
-                            text={text}
-                            mistakes={mistakes}
-                            addMistakeAndCorrection={this.props.addMistakeAndCorrection}
-                            deleteSuggestion={this.props.deleteSuggestion}
-                            deleteMistake={this.props.deleteMistake}
-                            documentIndex={this.props.documentIndex}
-                            documentID={documentID}
-                            selectionHandler={this.selectionHandler.bind(this)}
-                            customClass="highlighter-class"
-                        />
+                        <CCardBody>
+                            <HighLighter 
+                                innerHTML={true}
+                                text={text}
+                                mistakes={mistakes}
+                                addMistakeAndCorrection={this.props.addMistakeAndCorrection}
+                                deleteSuggestion={this.props.deleteSuggestion}
+                                deleteMistake={this.props.deleteMistake}
+                                documentIndex={this.props.documentIndex}
+                                documentID={documentID}
+                                selectionHandler={this.selectionHandler.bind(this)}
+                                customClass="highlighter-class"
+                            />
+                        </CCardBody>
+                        <CCardFooter>
+                            <CButton color="danger"  className="float-right">Delete</CButton>
+                        </CCardFooter>
                 </CCard>
             </React.Fragment>
         )   

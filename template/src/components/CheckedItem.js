@@ -110,6 +110,11 @@ export default class CheckedItem extends Component {
         deleteDocs(_id)
     }
     
+    handleCheckDoc() {
+        const {checkDoc, _id} = this.props;
+        checkDoc(_id)
+    }
+    
 
     render() {
         // console.log(this.state.splited_sentence)
@@ -123,10 +128,12 @@ export default class CheckedItem extends Component {
                         {/* {this.state.splited_sentence} */}
                         <CCardHeader>
                             <CRow>
+                                <CCol><b>Mongo Id: </b><CBadge color="warning"><h3>{_id}</h3></CBadge></CCol>
                                 <CCol><b>Current Id: </b><CBadge color="primary"><h3>{current_id}</h3></CBadge></CCol>
                                 <CCol><b>Page Id: </b><CBadge color="success"><h3>{page_id}</h3></CBadge></CCol>
                                 <CCol><b>Parent Id:</b> <CBadge color="info"><h3>{parent_id}</h3></CBadge></CCol>
-                                <CButton color="danger" onClick={this.handleDeleteDocs.bind(this)} className="float-right">Delete</CButton>
+                                <CButton color="danger" onClick={this.handleDeleteDocs.bind(this)} className="float-right mr-2">Delete</CButton>
+                                <CButton color="success" onClick={this.handleCheckDoc.bind(this)} className="float-right">Check</CButton>
                             </CRow>
 
                         </CCardHeader>
@@ -145,7 +152,10 @@ export default class CheckedItem extends Component {
                             />
                         </CCardBody>
                         <CCardFooter>
-                            <CButton color="danger"  className="float-right">Delete</CButton>
+                            <CButton color="success" onClick={this.handleCheckDoc.bind(this)} className="float-right ">Check</CButton>
+                            <CButton color="danger"  onClick={this.handleDeleteDocs.bind(this)} className="float-right mr-2">Delete</CButton>
+                            
+
                         </CCardFooter>
                 </CCard>
             </React.Fragment>

@@ -9,6 +9,9 @@ const wikiSchema = mongooes.Schema({
         type:String,
         require:true,
     },
+    
+    is_checked:Boolean,
+
     current_id: {
         type:Number,
         require:true

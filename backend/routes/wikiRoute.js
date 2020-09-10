@@ -31,13 +31,28 @@ router.get('/:page', async(req, res) => {
     const ids = range(page * pageLimit - pageLimit + 1, page * pageLimit + 1);
     // console.log(ids)
     try{
-        const queryResult = await wiki.find().where('_id').in(ids).exec();
-        console.log(queryResult)
+        const queryResult = await wiki.find({'is_checked': false}).where('_id').in(ids).exec();
+        console.log("get page " + page)
         res.json(queryResult);
     }catch (err) {
         res.json({message: err});
     }
 });
+
+router.post('/check/:docID', async (req,res) => {
+    const docID = req.params.docID;
+
+    
+    try {
+        var query = {'_id': docID};
+        const result = await wiki.findByIdAndUpdate(query, {'is_checked': true})
+        console.log("update checked " + docID);
+        res.json(result)
+    }catch (err) {
+        res.json({message: err});
+    }
+
+})
 
 
 router.delete('/:docId', async (req, res) => {

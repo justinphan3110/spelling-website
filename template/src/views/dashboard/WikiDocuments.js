@@ -163,25 +163,33 @@ export default class WikiDocuments extends Component {
           
       }
 
-      deleteDocs(_id) {
+    deleteDocs(_id) {
         // console.log(_id) 
-        const newData = this.state.data.filter((item)=> item._id !== _id)
         axios.delete('http://localhost:3002/wiki/' + _id)
         .then((response)=>{
-            this.setState({data: newData});
+            this.getWikiDocuments();
             // console.log(response.data)
         }).catch( function (e) {
             console.log("can not delete docs " + _id)
         })
         
     }
+
+    checkDoc(_id) {
+        axios.post('http://localhost:3002/wiki/check/' + _id)
+        .then((response) => {
+            this.getWikiDocuments();
+        }).catch( function (e) {
+            console.log("can not check docs " + _id);
+        })
+    }
     
-      download() {
-          const fs = require('fs');
-    
-          let data = JSON.stringify(this.state.data);
-          fs.writeFile('student-2.json', data);
-      }
+    download() {
+        const fs = require('fs');
+
+        let data = JSON.stringify(this.state.data);
+        fs.writeFile('student-2.json', data);
+    }
     
       handleSaveToPC() {
           const jsonData = this.state.data
@@ -297,6 +305,7 @@ export default class WikiDocuments extends Component {
                                     mistakes={item.mistakes}
 
                                     deleteDocs={this.deleteDocs.bind(this)}
+                                    checkDoc={this.checkDoc.bind(this)}
                                     addMistakeAndCorrection={this.addMistakeAndCorrection}
                                     deleteSuggestion={this.deleteSuggestion}
                                     deleteMistake={this.deleteMistake}
@@ -310,7 +319,7 @@ export default class WikiDocuments extends Component {
             <div className="animated fadeIn">
             <Row>
               <Col  md={{ size: 6, offset: 0 }}>
-                <h3>Vietnamese Spelling Correction</h3>
+                <h3>Wiki Documents Correction</h3>
                 {this.paginationsGenerate()}
               </Col>
             </Row>

@@ -176,7 +176,11 @@ export default class WikiDocuments extends Component {
     }
 
     checkDoc(_id) {
-        axios.post('http://localhost:3002/wiki/check/' + _id)
+        const {data} =  this.state;
+        var params = data.filter((d) => d._id === _id)[0];
+        params['is_checked'] = true;
+
+        axios.post('http://localhost:3002/wiki/check/' + _id, params)
         .then((response) => {
             this.getWikiDocuments();
         }).catch( function (e) {

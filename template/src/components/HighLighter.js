@@ -253,21 +253,15 @@ export default class HighLighter extends Component {
                         placement="top" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
                                     <PopoverHeader>
                                         <Form onSubmit={this.handleSubmitMistake.bind(this)}>
-                                        <FormGroup>
-                                            <Label for="exampleEmail">{this.state.middle}</Label>
-                                            <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
-                                                color="danger"
-                                                size="sm">-</Button>
-                                            <Input placeholder="add an suggestion" value={this.state.suggestion} 
-                                                onChange={(e) => this.setState({
-                                                suggestion: e.target.value})} />
-                                        </FormGroup>
-                                            
-                                            {/* <Button style={{border: 0, "color": "black", "padding": "5%"}} 
-                                                size="sm" 
-                                                color="success" >
-                                                    +
-                                            </Button> */}
+                                            <FormGroup>
+                                                <Label for="exampleEmail">{this.state.middle}</Label>
+                                                <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
+                                                    color="danger"
+                                                    size="sm">-</Button>
+                                                <Input placeholder="add an suggestion" value={this.state.suggestion} 
+                                                    onChange={(e) => this.setState({
+                                                    suggestion: e.target.value})} />
+                                            </FormGroup>
                                         </Form>
                                     </PopoverHeader>
 

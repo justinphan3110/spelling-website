@@ -24,7 +24,7 @@ const wikiSchema = mongooes.Schema({
         type:Number,
         require:true
     },
-    mistake: [{
+    mistakes: [{
         text : String,
         start_offset : Number,
         score: Number,

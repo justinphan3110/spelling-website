@@ -29,7 +29,6 @@ router.get('/:page', async(req, res) => {
     const pageLimit = parseInt(process.env.PAGE_LIMIT);
     // each page has 50 docs
     const ids = range(page * pageLimit - pageLimit + 1, page * pageLimit + 1);
-    // console.log(ids)
     try{
         const queryResult = await wiki.find({'is_checked': false}).where('_id').in(ids).exec();
         console.log("get page " + page)
@@ -41,11 +40,21 @@ router.get('/:page', async(req, res) => {
 
 router.post('/check/:docID', async (req,res) => {
     const docID = req.params.docID;
-
+    var data = req.body
+    // data.is_checked = true
+    // console.log(data);
     
     try {
         var query = {'_id': docID};
-        const result = await wiki.findByIdAndUpdate(query, {'is_checked': true})
+        const removed = await wiki.deleteOne({
+            _id: docID
+        });
+
+
+        const newData = new wiki(data)
+        const result = await newData.save()
+        console.log("inserted " + result)
+
         console.log("update checked " + docID);
         res.json(result)
     }catch (err) {

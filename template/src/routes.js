@@ -27,6 +27,7 @@ import React from 'react';
 // const Charts = React.lazy(() => import('./views/charts/Charts'));
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
 const Starter = React.lazy(() => import('./views/dashboard/Starter'));
+const WikiDocument = React.lazy(() => import('./views/dashboard/WikiDocuments'));
 // const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'));
 // const Flags = React.lazy(() => import('./views/icons/flags/Flags'));
 // const Brands = React.lazy(() => import('./views/icons/brands/Brands'));
@@ -42,7 +43,8 @@ const Starter = React.lazy(() => import('./views/dashboard/Starter'));
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/spelling', name: 'Vietnamese Spelling Correction', component: Starter}
+  { path: '/spelling', name: 'Vietnamese Spelling Correction', component: Starter},
+  { path: '/wiki', name: 'Wiki Documents', component: WikiDocument},
   // { path: '/theme', name: 'Theme', component: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', component: Colors },
   // { path: '/theme/typography', name: 'Typography', component: Typography },

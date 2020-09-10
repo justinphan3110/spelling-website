@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import {Row, Col, Button, Container} from 'reactstrap'
+import {
+    CCard, CCardHeader, CRow, CCol, CBadge,
+  } from '@coreui/react'
 import HighLighter from './HighLighter';
 
 export default class CheckedItem extends Component {
@@ -110,14 +113,22 @@ export default class CheckedItem extends Component {
 
     render() {
         // console.log(this.state.splited_sentence)
-        const {documentID} = this.props
+        const {documentID, current_id, parent_id, page_id} = this.props
         const {text, mistakes} = this.state
 
         return (
             <React.Fragment>
                 <hr className="my-2" />
-                <Container style={{padding: "1%", width: "auto", backgroundColor: "#FFFFFF"}}>
+                <CCard style={{padding: "1%", width: "auto", backgroundColor: "#FFFFFF"}}>
                         {/* {this.state.splited_sentence} */}
+                        <CCardHeader>
+                            <CRow>
+                                <CCol>Current Id: <CBadge color="primary">{current_id}</CBadge></CCol>
+                                <CCol>Page Id: <CBadge color="success">{page_id}</CBadge></CCol>
+                                <CCol>Parent Id: <CBadge color="info">{parent_id}</CBadge></CCol>
+                            </CRow>
+
+                        </CCardHeader>
                         <HighLighter 
                             innerHTML={true}
                             text={text}
@@ -130,7 +141,7 @@ export default class CheckedItem extends Component {
                             selectionHandler={this.selectionHandler.bind(this)}
                             customClass="highlighter-class"
                         />
-                </Container>
+                </CCard>
             </React.Fragment>
         )   
     }

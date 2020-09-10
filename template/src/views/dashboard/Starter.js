@@ -20,14 +20,11 @@ import {
 
 // import input from '.'
 import input from '../../data/model_corrected.json'
-import CIcon from '@coreui/icons-react'
-import Main from '../../components/Main';
 import CheckedItem from '../../components/CheckedItem';
 import ReactJson from 'react-json-view'
 
 import { Upload, message, Button } from "antd";
 import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
-import { ppid } from 'process';
 
 
 

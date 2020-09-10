@@ -4,15 +4,17 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    }
   },
   {
     _tag: 'CSidebarNavItem',
     name: 'Spelling Correction',
     to: '/spelling',
+    icon: 'cil-speedometer',
+  },
+  {
+    _tag: 'CSidebarNavItem',
+    name: 'Wiki Documents',
+    to: '/wiki',
     icon: 'cil-speedometer',
     badge: {
       color: 'success',

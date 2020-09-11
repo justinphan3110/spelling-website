@@ -92,9 +92,9 @@ export default class HighLighter extends Component {
                 preCaretRange.selectNodeContents(element);
                 
                 preCaretRange.setEnd(range.endContainer, range.endOffset);
-                
+
                 if(this.getOs() === 'Windows')
-                    caretOffset = preCaretRange.toString().length;
+                    caretOffset = preCaretRange.toString().trim().length;
                 else
                     caretOffset = preCaretRange.toString().length;
             }

@@ -27,6 +27,9 @@ import ReactJson from 'react-json-view'
 import { Upload, message, Button } from "antd";
 import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
 
+const REACT_APP_REST_ADDRESS = process.env.REACT_APP_REST_ADDRESS
+const REACT_APP_BACK_END_PORT = process.env.REACT_APP_BACK_END_PORT
+const REST_ADDRESS = 'http://' + REACT_APP_REST_ADDRESS + ":" + REACT_APP_BACK_END_PORT
 export default class WikiDocuments extends Component {
         constructor() {
             super()
@@ -40,7 +43,7 @@ export default class WikiDocuments extends Component {
         
                 fileName: 'Default Data',
                 viewJson: false, 
-
+                
                 page: 1
         
             }
@@ -48,6 +51,7 @@ export default class WikiDocuments extends Component {
         this.addMistakeAndCorrection = this.addMistakeAndCorrection.bind(this)
         this.deleteSuggestion = this.deleteSuggestion.bind(this)
         this.deleteMistake=this.deleteMistake.bind(this)
+
         // this.deleteDocs=this.deleteDocs.bind(this)
         // this.test=this.test.bind(this)
         // this.deleteDocument=this.deleteDocument.bind(this)
@@ -64,13 +68,14 @@ export default class WikiDocuments extends Component {
 
     componentDidMount() {
         this.getWikiDocuments();
+        console.log(REST_ADDRESS)
     }
 
 
 
     getWikiDocuments() {
         // console.log("in get wiki")
-        axios.get('http://34.87.31.113:3002/wiki/' + this.state.page)
+        axios.get(REST_ADDRESS + '/wiki/' + this.state.page)
             .then((response)=>{
                 this.setState({data: response.data})
                 // console.log(response.data)
@@ -165,7 +170,7 @@ export default class WikiDocuments extends Component {
 
     deleteDocs(_id) {
         // console.log(_id) 
-        axios.delete('http://34.87.31.113:3002/wiki/' + _id)
+        axios.delete(REST_ADDRESS + '/wiki/' + _id)
         .then((response)=>{
             this.getWikiDocuments();
             // console.log(response.data)
@@ -180,7 +185,7 @@ export default class WikiDocuments extends Component {
         var params = data.filter((d) => d._id === _id)[0];
         params['is_checked'] = true;
 
-        axios.post('http://34.87.31.113:3002/wiki/check/' + _id, params)
+        axios.post(REST_ADDRESS +'/wiki/check/' + _id, params)
         .then((response) => {
             this.getWikiDocuments();
         }).catch( function (e) {

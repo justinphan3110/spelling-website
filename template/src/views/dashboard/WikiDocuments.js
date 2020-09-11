@@ -70,7 +70,7 @@ export default class WikiDocuments extends Component {
 
     getWikiDocuments() {
         // console.log("in get wiki")
-        axios.get('http://0.0.0.0:3002/wiki/' + this.state.page)
+        axios.get('http://127.0.0.1:3002/wiki/' + this.state.page)
             .then((response)=>{
                 this.setState({data: response.data})
                 // console.log(response.data)
@@ -165,7 +165,7 @@ export default class WikiDocuments extends Component {
 
     deleteDocs(_id) {
         // console.log(_id) 
-        axios.delete('http://0.0.0.0:3002/wiki/' + _id)
+        axios.delete('http://127.0.0.1:3002/wiki/' + _id)
         .then((response)=>{
             this.getWikiDocuments();
             // console.log(response.data)
@@ -180,7 +180,7 @@ export default class WikiDocuments extends Component {
         var params = data.filter((d) => d._id === _id)[0];
         params['is_checked'] = true;
 
-        axios.post('http://0.0.0.0:3002/wiki/check/' + _id, params)
+        axios.post('http://127.0.0.1:3002/wiki/check/' + _id, params)
         .then((response) => {
             this.getWikiDocuments();
         }).catch( function (e) {

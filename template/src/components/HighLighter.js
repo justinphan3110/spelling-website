@@ -76,6 +76,11 @@ export default class HighLighter extends Component {
         })
     }
 
+    getOs() {
+        const os = ['Windows', 'Linux', 'Mac']; // add your OS values
+        return os.find(v=>navigator.appVersion.indexOf(v) >= 0);
+    }
+
     getCaretCharacterOffsetWithin(element, sel) {
         var caretOffset = 0;
         var doc = element.ownerDocument || element.document;
@@ -87,7 +92,11 @@ export default class HighLighter extends Component {
                 preCaretRange.selectNodeContents(element);
                 
                 preCaretRange.setEnd(range.endContainer, range.endOffset);
-                caretOffset = preCaretRange.toString().length;
+                
+                if(this.getOs() === 'Windows')
+                    caretOffset = preCaretRange.toString().length;
+                else
+                    caretOffset = preCaretRange.toString().length;
             }
         } else if ( (sel = doc.selection) && sel.type != "Control") {
             var textRange = sel.createRange();

@@ -68,7 +68,6 @@ export default class WikiDocuments extends Component {
 
     componentDidMount() {
         this.getWikiDocuments();
-        console.log(REST_ADDRESS)
     }
 
 

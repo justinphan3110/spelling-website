@@ -30,7 +30,8 @@ router.get('/:page', async(req, res) => {
     // each page has 50 docs
     const ids = range(page * pageLimit - pageLimit + 1, page * pageLimit + 1);
     try{
-        const queryResult = await wiki.find({'is_checked': false}).where('_id').in(ids).exec();
+        // const queryResult = await wiki.find({'is_checked': false}).where('_id').in(ids).exec();
+        const queryResult = await wiki.find({'is_checked': false}).skip((page - 1) * pageLimit).limit(pageLimit)
         console.log("get page " + page)
         res.json(queryResult);
     }catch (err) {

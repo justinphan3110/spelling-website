@@ -4,6 +4,7 @@ import { Button, Popover, UncontrolledPopover,
         PopoverHeader, 
         PopoverBody, Badge, Form, FormGroup, Label, 
         Input  } from 'reactstrap';
+import { CBadge } from '@coreui/react';
 
 const propTypes = {
     text: PropTypes.string.isRequired,
@@ -243,6 +244,15 @@ export default class HighLighter extends Component {
         // this.toggle()
     }
 
+    getMistakeScore() {
+        const {mistakes, selectionStart} = this.state
+
+        var item = mistakes.filter((i) => i.start_offset === selectionStart)
+        if(item.length == 0)
+            return 1
+        else return item[0].score
+    }
+
     popOver() {
         // let s = this.suggestContext.bind(this)
         const {documentID, mistakes, selectionStart, middle} = this.state
@@ -254,7 +264,7 @@ export default class HighLighter extends Component {
                                     <PopoverHeader>
                                         <Form onSubmit={this.handleSubmitMistake.bind(this)}>
                                             <FormGroup>
-                                                <Label for="exampleEmail">{this.state.middle}</Label>
+                                                <Label for="exampleEmail"><CBadge size="lg" color="warning">{this.state.middle} - {this.getMistakeScore()}</CBadge></Label>
                                                 <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
                                                     color="danger"
                                                     size="sm">-</Button>

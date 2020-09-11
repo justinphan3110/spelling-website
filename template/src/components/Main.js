@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import input from '../data/model_corrected.json'
+import input from '../data/data.json'
 import CheckedItem from './CheckedItem'
 import {Row, Col, Button, Container} from 'reactstrap'
 import { CSVLink, CSVDownload } from "react-csv";
@@ -9,7 +9,7 @@ export default class Main extends Component {
         super()
         
         this.state = {
-            data: input.body
+            data: input
         }
 
         this.addMistakeAndCorrection = this.addMistakeAndCorrection.bind(this)
@@ -19,7 +19,8 @@ export default class Main extends Component {
 
     componentDidMount() {
         // console.log(data.body)
-        // console.log(this.state.data);
+        console.log("data")
+        console.log(this.state.data);
     }
 
     componentDidUpdate(prevProps) {

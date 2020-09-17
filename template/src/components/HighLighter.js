@@ -197,13 +197,13 @@ export default class HighLighter extends Component {
         const {mistakes, selectionStart, middle, documentID} = this.state
         
 
-        let suggests = []
+        let suggests = [];
         mistakes.forEach(mistake => {
             if(mistake.start_offset == selectionStart && middle == mistake.text){
                 suggests = mistake.suggest
             }
         });
-
+        
         let suggestButtons = []
         suggests.forEach(suggest => {
             let b = <span><Button 
@@ -220,6 +220,8 @@ export default class HighLighter extends Component {
                     </span>
             suggestButtons.push(b)
         })
+
+        suggestButtons.push()
 
         // suggestButtons.push()
 
@@ -267,16 +269,24 @@ export default class HighLighter extends Component {
         const {documentID, mistakes, selectionStart, middle} = this.state
 
         let suggest = this.suggestContext()
+        let source_check = "";
+        mistakes.forEach(mistake => {
+            if(mistake.start_offset == selectionStart && middle == mistake.text){
+                source_check = mistake.source_check
+            }
+        });
+
 
         return <UncontrolledPopover trigger="legacy" 
                         placement="top" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
                                     <PopoverHeader>
                                         <Form onSubmit={this.handleSubmitMistake.bind(this)}>
                                             <FormGroup>
-                                                <Label for="exampleEmail"><CBadge size="lg" color="warning">{this.state.middle} - {this.getMistakeScore()}</CBadge></Label>
+                                                <Label for="exampleEmail"><CBadge size="lg" color="warning">{this.state.middle} - {Math.round(this.getMistakeScore()*1000)/1000}</CBadge></Label>
                                                 <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
                                                     color="danger"
                                                     size="sm">-</Button>
+                                                <CBadge className="float-right" size="lg" color="info">{source_check}</CBadge>
                                                 <Input placeholder="add an suggestion" value={this.state.suggestion} 
                                                     onChange={(e) => this.setState({
                                                     suggestion: e.target.value})} />

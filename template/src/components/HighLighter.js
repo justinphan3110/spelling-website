@@ -50,6 +50,7 @@ export default class HighLighter extends Component {
         };
         this.onMouseUpHandler = this.onMouseUpHandler.bind(this);
         this.escFunction = this.escFunction.bind(this);
+        this.handleSubmitMistake = this.handleSubmitMistake.bind(this);
 
     }
 

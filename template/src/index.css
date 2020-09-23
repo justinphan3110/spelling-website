@@ -35,3 +35,6 @@ code {
   white-space: nowrap;
 }
 
+span {
+  white-space: pre;
+}

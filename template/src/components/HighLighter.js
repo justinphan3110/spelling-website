@@ -483,7 +483,7 @@ export default class HighLighter extends Component {
                                     // content={<CButton color="success" onClick={() => console.log("tesadsa")}>Test</CButton>}
                                 >
                                     <CButton style={{variant: 'ghost', border: 0, "color": "black", "padding": "0%"}}>
-                                        <span class='tag' style={{color: 'rgb(255, 255, 255)', "background-color": 'rgb(255, 51, 51)'}}>
+                                        <span class='tag' style={{color: 'rgb(255, 255, 255)', "background-color": 'rgb(0,0,0,250)'}}>
                                         {this.state.middle}
 
                                 <CBadge class="delete is-small" color="danger" style={{marginLeft: '10%', height: "90%"}}>

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Popover, UncontrolledPopover,
+import { Button, UncontrolledPopover,
         PopoverHeader, 
-        PopoverBody, Badge, Form, FormGroup, Label, 
+        PopoverBody, Form, FormGroup, Label, 
         Input  } from 'reactstrap';
-import { CBadge } from '@coreui/react';
+
+        import { CBadge, CButton, CPopover } from '@coreui/react';
+import CIcon from '@coreui/icons-react'
 
 const propTypes = {
     text: PropTypes.string.isRequired,
@@ -102,7 +104,7 @@ export default class HighLighter extends Component {
             var textRange = sel.createRange();
             var preCaretTextRange = doc.body.createTextRange();
             preCaretTextRange.moveToElementText(element);
-            console.log("textRange ", textRange)
+            // console.log("textRange ", textRange)
             preCaretTextRange.setEndPoint("EndToEnd", textRange);
             caretOffset = preCaretTextRange.text.length;
         }
@@ -112,8 +114,9 @@ export default class HighLighter extends Component {
     onMouseUpHandler(e) {
         const{documentID} = this.state
         e.preventDefault();
-    
+
         if(e.detail >= 3 || this.state.popoverOpen) return 
+
         const selectionObj = (window.getSelection && window.getSelection());
         const selection = selectionObj.toString().trim();
 
@@ -121,6 +124,8 @@ export default class HighLighter extends Component {
         const focusNode = selectionObj.focusNode;
         const anchorOffset = selectionObj.anchorOffset;
         const focusOffset = selectionObj.focusOffset;
+        if(!focusNode)
+            return
         const position = anchorNode.compareDocumentPosition(focusNode);
         let forward = false;
 
@@ -193,8 +198,8 @@ export default class HighLighter extends Component {
         this.props.modifyText(this.props.documentIndex, first + e.target.value + last)
     }
 
-    suggestContext() {
-        const {mistakes, selectionStart, middle, documentID} = this.state
+    suggestContext(selectionStart, middle) {
+        const {mistakes, documentID} = this.state
         
 
         let suggests = [];
@@ -303,6 +308,7 @@ export default class HighLighter extends Component {
         // const {mistakes} = this.state;
 
         // const textArray = text.split("chính");
+        const {documentID} = this.state;
         let textArray = []
 
         let mistakeIndex = mistakes.map(mistake => {
@@ -319,7 +325,8 @@ export default class HighLighter extends Component {
         mistakeIndex.map(index => {
             textArray.push(text.slice(left, index[0]))
             left = index[1];
-            mistakesArray.push(text.slice(index[0], index[1]));
+            if(text.slice(index[0], index[1]))
+                mistakesArray.push(index);
         })
 
         if(left < text.length) {
@@ -329,43 +336,75 @@ export default class HighLighter extends Component {
         // console.log(mistakeIndex)
         // console.log(textArray)
         // console.log(mistakesArray)
-
+        // console.log(mistakesArray.length)
         return (
           <span>
-            {textArray.map((item, index) => (
-              <>
-                {item}
-                {index !== textArray.length - 1 && mistakeIndex && (
-                  <span style={{color:"red"}}>{mistakesArray.shift()}</span>
-                )}
-              </>
-            ))}
+            {textArray.map(function(item, index){
+                let mistakeItem = mistakesArray.shift();
+                return (
+                    <>
+                        {item}
+                        {index !== textArray.length - 1 && mistakeIndex && mistakesArray.length != 0 && (
+                        
+                                
+                                
+
+                                <CPopover header="Popover header"
+                                    content={`Popover with placement: ${text.slice(mistakeItem[0], mistakeItem[1])}`}
+                                    placement={'top'}
+                                    interactive={true}
+                                    trigger="click"
+                                >
+                                    <CButton style={{variant: 'ghost', border: 0, "color": "black", "padding": "0%"}}>
+                                        <span class='tag' style={{color: 'rgb(255, 255, 255)', "background-color": 'rgb(255, 51, 51)'}}>
+                                        {text.slice(mistakeItem[0], mistakeItem[1])}
+
+                                        <CBadge class="delete is-small" color="danger" style={{marginLeft: '10%', height: "90%"}}>
+                                            <CIcon name="cil-x-circle" onClick={() => console.log("delete")}/>
+                                        </CBadge>
+                                        </span>
+                                    </CButton>
+                                </CPopover>
+
+
+                                // {/* {document.getElementById() && this.state.mistakes &&
+                                //     this.popOver(documentID, mistakeItem[0], text.slice(mistakeItem[0], mistakeItem[1]))    
+                                // } */}
+                         
+                        )}
+                    </>)
+            })}
           </span>
       );
       }
 
     render() {
         const {documentID, text , mistakes} = this.state
-
+        
         if (!this.state.selection) {
             return (
+                <div class="content">
                 <React.Fragment>
+                
                 <span id={"mainText"+documentID}
-                    onMouseUp={this.onMouseUpHandler}>
+                    onMouseUp={this.onMouseUpHandler.bind(this)}>
                         {/* {this.splitSentence(this.state.text).map(item => {return <span> {item} </span>})} */}
                         {this.BoldedText(text, mistakes)}
                 </span>
                 </React.Fragment>
+                </div>
             )
         } else {
             return (
+                <div class="content">
                 <React.Fragment>
                 <span id={"mainText" + documentID}
                 
                     onMouseUp={this.onMouseUpHandler.bind(this)}>
                     <span
                         data-order="first" >
-                        {this.state.first}
+                        {this.BoldedText(this.state.first, mistakes)}
+                        {/* {this.state.first} */}
                     </span>                    
                     <span  
                         data-order="middle"
@@ -387,10 +426,12 @@ export default class HighLighter extends Component {
                     </span>
                     <span
                         data-order="last">
-                        {this.state.last}
+                            {this.BoldedText(this.state.last, mistakes)}
+                        {/* {this.state.last} */}
                     </span>
                 </span>
                 </React.Fragment>
+                </div>
             )
         }
 

@@ -26,7 +26,9 @@ import {
   cibStripe,
   cibPaypal,
   cibGooglePay,
-  cibCcAmex
+  cibCcAmex,
+  cibIfixit,
+  cibXPack,
 } from '@coreui/icons'
 import {
   cifUs,
@@ -127,7 +129,8 @@ import {
   cilUserUnfollow,
   cilX,
   cilXCircle,
-  cilWarning
+  cilWarning,
+  // cilTrash,
 } from '@coreui/icons'
 
 export const icons = Object.assign({}, {
@@ -135,6 +138,7 @@ export const icons = Object.assign({}, {
   logo,
   logoNegative
 }, {
+  // cilTrash,
   cilAlignCenter,
   cilAlignLeft,
   cilAlignRight,
@@ -257,5 +261,7 @@ export const icons = Object.assign({}, {
   cibStripe,
   cibPaypal,
   cibGooglePay,
-  cibCcAmex
+  cibCcAmex,
+  cibIfixit,
+  cibXPack,
 })

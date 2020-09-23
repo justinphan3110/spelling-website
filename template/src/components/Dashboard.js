@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
-    Card, FormGroup, Container, Input,
-    CardTitle, Row, Col, 
+     FormGroup, Container, Input,
+     Row, Col, 
     Button, Jumbotron
   } from 'reactstrap';
 import CheckedItem from './CheckedItem';

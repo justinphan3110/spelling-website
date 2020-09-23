@@ -27,6 +27,8 @@ function range(start, end) {
 router.get('/:page', async(req, res) => {
     const page = req.params.page;
     const pageLimit = parseInt(process.env.PAGE_LIMIT);
+    console.log("pageLimit: " + pageLimit);
+    
     // each page has 50 docs
     const ids = range(page * pageLimit - pageLimit + 1, page * pageLimit + 1);
     try{

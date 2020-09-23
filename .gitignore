@@ -1,0 +1,6 @@
+
+backend/.env
+
+*.swp
+
+template/.env

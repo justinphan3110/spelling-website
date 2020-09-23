@@ -12,3 +12,26 @@ code {
     monospace;
 }
 
+.content .tag {
+  font-size: 14pt;
+  height: 1.5em;
+  padding-left: .5em;
+  padding-right: .5em;
+}
+
+
+.tag:not(body) {
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  color: #4a4a4a;
+  display: inline-flex;
+  font-size: .75rem;
+  height: 2em;
+  justify-content: center;
+  line-height: 1.5;
+  padding-left: .75em;
+  padding-right: .75em;
+  white-space: nowrap;
+}
+

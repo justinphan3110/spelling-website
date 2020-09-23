@@ -137,6 +137,9 @@ export default class WikiDocuments extends Component {
       }
     
       deleteSuggestion(index, start_offset, suggestionText) {
+          console.log("delete " , suggestionText)
+
+
           let {data} = this.state
           let {mistakes} = data[index]
     

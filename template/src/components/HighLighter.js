@@ -5,7 +5,9 @@ import { Button, UncontrolledPopover,
         PopoverBody, Form, FormGroup, Label, 
         Input  } from 'reactstrap';
 
-        import { CBadge, CButton, CPopover } from '@coreui/react';
+        import { CBadge, CButton } from '@coreui/react';
+import { Popover } from 'antd';
+
 import CIcon from '@coreui/icons-react'
 
 const propTypes = {
@@ -47,6 +49,8 @@ export default class HighLighter extends Component {
             suggestion: ''
         };
         this.onMouseUpHandler = this.onMouseUpHandler.bind(this);
+        this.escFunction = this.escFunction.bind(this);
+
     }
 
     componentDidUpdate(prevProps) {
@@ -60,14 +64,29 @@ export default class HighLighter extends Component {
         }
     }
 
-    componentDidMount() {
+    escFunction(event){
+        if(event.keyCode === 27) {
+          //Do whatever when esc is pressed
+          this.setState({
+            selection: '',
+            anchorNode: '?',
+            focusNode: '?',
+            selectionStart: '?',
+            selectionEnd: '?',
+            first: '',
+            middle: '',
+            last: '',
+            suggestion: '',
+            popoverOpen: false,
+          })
+        }
+    }
 
-
-        this.setState( {
-            popoverOpen : false,
-        })
-
-        // console.log("mistakes", this.state.mistakes);
+    componentDidMount(){
+        document.addEventListener("keydown", this.escFunction, false);
+    }
+    componentWillUnmount(){
+        document.removeEventListener("keydown", this.escFunction, false);
     }
     
     toggle() {
@@ -198,7 +217,9 @@ export default class HighLighter extends Component {
         this.props.modifyText(this.props.documentIndex, first + e.target.value + last)
     }
 
+
     suggestContext(selectionStart, middle) {
+        // e.preventDefault();
         const {mistakes, documentID} = this.state
         
 
@@ -208,45 +229,52 @@ export default class HighLighter extends Component {
                 suggests = mistake.suggest
             }
         });
+
         
         let suggestButtons = []
         suggests.forEach(suggest => {
-            let b = <span><Button 
-                        id={documentID + Math.random()}
-                        size="sm"
-                        outline
-                        value={suggest[0]}
-                        color="success"
-                        onClick={this.handleDeleteSuggestion.bind(this)}
-                    >
-                        {suggest[0]}
-                        ---{Math.round(suggest[1]*100)/100}
-                    </Button>
-                    </span>
+            let b =                 
+            <span><Button 
+                key={documentID + Math.random()}
+                size="sm"
+                outline
+                value={suggest[0]}
+                color="success"
+                onClick={(e) => this.handleDeleteSuggestion(e, selectionStart)}
+            >
+                {suggest[0]}
+                ---{Math.round(suggest[1]*100)/100}
+            </Button>
+            </span>
             suggestButtons.push(b)
         })
 
-        suggestButtons.push()
+        // suggestButtons.push()
 
         // suggestButtons.push()
 
         return suggestButtons;
     }
 
-    handleSubmitMistake(e) {
+    handleSubmitMistake(e, middle, selectionStart) {
         
         const {documentIndex, addMistakeAndCorrection} = this.props;
-        const {suggestion, middle, selectionStart} = this.state
+        const {suggestion} = this.state
         e.preventDefault()
 
         addMistakeAndCorrection(documentIndex, middle, selectionStart, suggestion)
+        this.setState({
+            suggestion: ''
+        })
     }
 
-    handleDeleteSuggestion(e) {
+    handleDeleteSuggestion(e, selectionStart) {
+        let value = e.target.value;
+        e.preventDefault();
+        console.log('click', value)
         const {documentIndex, deleteSuggestion} = this.props;
-        const {suggestion, middle, selectionStart} = this.state
 
-        deleteSuggestion(documentIndex, selectionStart, e.target.value);
+        deleteSuggestion(documentIndex, selectionStart,value);
     }
 
     handleDeleteMistake(e) {
@@ -259,6 +287,18 @@ export default class HighLighter extends Component {
         this.toggle()
         // this.toggle()
     }
+
+    handleDeleteMistakeAtIndex(index) {
+        const {documentIndex, deleteMistake} = this.props;
+        const {suggestion, middle, selectionStart} = this.state;        
+        deleteMistake(documentIndex, index)
+        this.setState({
+            selection: ''
+        })
+        // this.toggle()
+        // this.toggle()
+    }
+
 
     getMistakeScore() {
         const {mistakes, selectionStart} = this.state
@@ -303,6 +343,31 @@ export default class HighLighter extends Component {
                 </UncontrolledPopover > 
     }
 
+    exsitedPopover(selectionStart, middle) {
+        let suggest = this.suggestContext(selectionStart, middle);
+        let source_check = "";
+        const {documentID, mistakes} = this.state
+        mistakes.forEach(mistake => {
+            if(mistake.start_offset == selectionStart && middle == mistake.text){
+                source_check = mistake.source_check
+            }
+        });
+
+        return <React.Fragment>
+                    <Form onSubmit={(e) => this.handleSubmitMistake(e, middle, selectionStart)}>
+                    <FormGroup>
+                        <Label for="exampleEmail"><CBadge size="lg" color="warning">{middle} - {Math.round(this.getMistakeScore()*1000)/1000}</CBadge></Label>
+                        <CBadge className="float-right" size="lg" color="info">{source_check}</CBadge>
+                        <Input placeholder="add an suggestion" value={this.state.suggestion} 
+                            onChange={(e) => this.setState({
+                            suggestion: e.target.value})} />
+                    </FormGroup>
+                    </Form>
+                    <div key={Math.random()}>{suggest}</div>
+                    
+            </React.Fragment>
+    }
+
 
     BoldedText(text, mistakes) {
         // const {mistakes} = this.state;
@@ -339,34 +404,32 @@ export default class HighLighter extends Component {
         // console.log(mistakesArray.length)
         return (
           <span>
-            {textArray.map(function(item, index){
+            {textArray.map((item, index) => {
                 let mistakeItem = mistakesArray.shift();
+                // let start = mistakeItem[0];
+                // console.log(mistakeItem[0])
+                
                 return (
                     <>
                         {item}
                         {index !== textArray.length - 1 && mistakeIndex && mistakesArray.length != 0 && (
-                        
-                                
-                                
-
-                                <CPopover header="Popover header"
-                                    content={`Popover with placement: ${text.slice(mistakeItem[0], mistakeItem[1])}`}
-                                    placement={'top'}
-                                    interactive={true}
-                                    trigger="click"
+                            <>
+                                <Popover
+                                    content={this.exsitedPopover(mistakeItem[0], text.slice(mistakeItem[0], mistakeItem[1]))}
+                                    // content={<CButton color="success" onClick={() => console.log("tesadsa")}>Test</CButton>}
                                 >
                                     <CButton style={{variant: 'ghost', border: 0, "color": "black", "padding": "0%"}}>
                                         <span class='tag' style={{color: 'rgb(255, 255, 255)', "background-color": 'rgb(255, 51, 51)'}}>
                                         {text.slice(mistakeItem[0], mistakeItem[1])}
 
                                         <CBadge class="delete is-small" color="danger" style={{marginLeft: '10%', height: "90%"}}>
-                                            <CIcon name="cil-x-circle" onClick={() => console.log("delete")}/>
+                                            <CIcon name="cil-x-circle" onClick={this.handleDeleteMistakeAtIndex.bind(this, mistakeItem[0])}/>
                                         </CBadge>
                                         </span>
                                     </CButton>
-                                </CPopover>
+                                </Popover>
 
-
+                                </>    
                                 // {/* {document.getElementById() && this.state.mistakes &&
                                 //     this.popOver(documentID, mistakeItem[0], text.slice(mistakeItem[0], mistakeItem[1]))    
                                 // } */}
@@ -409,8 +472,28 @@ export default class HighLighter extends Component {
                     <span  
                         data-order="middle"
                         >
+                        
+                        <Popover
+                                    content={this.exsitedPopover(this.state.selectionStart, this.state.middle)}
+                                    trigger="hover"
+                                    title={"New Spelling Error for word '" + this.state.middle + "'"}
+                                    visible={this.state.popoverOpen}
+                                    onVisibleChange={this.toggle.bind(this)}
+                                    // content={<CButton color="success" onClick={() => console.log("tesadsa")}>Test</CButton>}
+                                >
+                                    <CButton style={{variant: 'ghost', border: 0, "color": "black", "padding": "0%"}}>
+                                        <span class='tag' style={{color: 'rgb(255, 255, 255)', "background-color": 'rgb(255, 51, 51)'}}>
+                                        {this.state.middle}
 
-                        <Button onClick={this.toggle.bind(this)}
+                                <CBadge class="delete is-small" color="danger" style={{marginLeft: '10%', height: "90%"}}>
+                                    <CIcon name="cil-x-circle" onClick={this.handleDeleteMistakeAtIndex.bind(this, this.state.selectionStart)}/>
+                                </CBadge>
+                                </span>
+                            </CButton>
+                        </Popover>
+
+
+                        {/* <Button onClick={this.toggle.bind(this)}
                                 onMouseEnter={this.toggle.bind(this)}
                                 style={{border: 0, "color": "black", "padding": "0.4%"}} 
                                 outline  
@@ -422,12 +505,11 @@ export default class HighLighter extends Component {
                         
                         {document.getElementById(documentID) && this.state.mistakes && this.state.middle &&
                             this.popOver()    
-                        }
+                        } */}
                     </span>
                     <span
                         data-order="last">
                             {this.BoldedText(this.state.last, mistakes)}
-                        {/* {this.state.last} */}
                     </span>
                 </span>
                 </React.Fragment>

@@ -301,8 +301,8 @@ export default class HighLighter extends Component {
     }
 
 
-    getMistakeScore() {
-        const {mistakes, selectionStart} = this.state
+    getMistakeScore(selectionStart) {
+        const {mistakes} = this.state
 
         var item = mistakes.filter((i) => i.start_offset === selectionStart)
         if(item.length == 0)
@@ -310,39 +310,39 @@ export default class HighLighter extends Component {
         else return item[0].score
     }
 
-    popOver() {
-        // let s = this.suggestContext.bind(this)
-        const {documentID, mistakes, selectionStart, middle} = this.state
+    // popOver() {
+    //     // let s = this.suggestContext.bind(this)
+    //     const {documentID, mistakes, selectionStart, middle} = this.state
 
-        let suggest = this.suggestContext()
-        let source_check = "";
-        mistakes.forEach(mistake => {
-            if(mistake.start_offset == selectionStart && middle == mistake.text){
-                source_check = mistake.source_check
-            }
-        });
+    //     let suggest = this.suggestContext()
+    //     let source_check = "";
+    //     mistakes.forEach(mistake => {
+    //         if(mistake.start_offset == selectionStart && middle == mistake.text){
+    //             source_check = mistake.source_check
+    //         }
+    //     });
 
 
-        return <UncontrolledPopover trigger="legacy" 
-                        placement="top" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
-                                    <PopoverHeader>
-                                        <Form onSubmit={this.handleSubmitMistake.bind(this)}>
-                                            <FormGroup>
-                                                <Label for="exampleEmail"><CBadge size="lg" color="warning">{this.state.middle} - {Math.round(this.getMistakeScore()*1000)/1000}</CBadge></Label>
-                                                <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
-                                                    color="danger"
-                                                    size="sm">-</Button>
-                                                <CBadge className="float-right" size="lg" color="info">{source_check}</CBadge>
-                                                <Input placeholder="add an suggestion" value={this.state.suggestion} 
-                                                    onChange={(e) => this.setState({
-                                                    suggestion: e.target.value})} />
-                                            </FormGroup>
-                                        </Form>
-                                    </PopoverHeader>
+    //     return <UncontrolledPopover trigger="legacy" 
+    //                     placement="top" target={documentID} isOpen={this.state.popoverOpen} toggle={this.toggle.bind(this)}>
+    //                                 <PopoverHeader>
+    //                                     <Form onSubmit={this.handleSubmitMistake.bind(this)}>
+    //                                         <FormGroup>
+    //                                             <Label for="exampleEmail"><CBadge size="lg" color="warning">{this.state.middle} - {Math.round(this.getMistakeScore()*1000)/1000}</CBadge></Label>
+    //                                             <Button id={"s" + Math.random} onClick={this.handleDeleteMistake.bind(this)} 
+    //                                                 color="danger"
+    //                                                 size="sm">-</Button>
+    //                                             <CBadge className="float-right" size="lg" color="info">{source_check}</CBadge>
+    //                                             <Input placeholder="add an suggestion" value={this.state.suggestion} 
+    //                                                 onChange={(e) => this.setState({
+    //                                                 suggestion: e.target.value})} />
+    //                                         </FormGroup>
+    //                                     </Form>
+    //                                 </PopoverHeader>
 
-                                    <PopoverBody>{suggest}</PopoverBody>
-                </UncontrolledPopover > 
-    }
+    //                                 <PopoverBody>{suggest}</PopoverBody>
+    //             </UncontrolledPopover > 
+    // }
 
     exsitedPopover(selectionStart, middle) {
         let suggest = this.suggestContext(selectionStart, middle);
@@ -357,7 +357,7 @@ export default class HighLighter extends Component {
         return <React.Fragment>
                     <Form onSubmit={(e) => this.handleSubmitMistake(e, middle, selectionStart)}>
                     <FormGroup>
-                        <Label for="exampleEmail"><CBadge size="lg" color="warning">{middle} - {Math.round(this.getMistakeScore()*1000)/1000}</CBadge></Label>
+                        <Label for="exampleEmail"><CBadge size="lg" color="warning">{middle} - {Math.round(this.getMistakeScore(selectionStart)*1000)/1000}</CBadge></Label>
                         <CBadge className="float-right" size="lg" color="info">{source_check}</CBadge>
                         <Input placeholder="add an suggestion" value={this.state.suggestion} 
                             onChange={(e) => this.setState({

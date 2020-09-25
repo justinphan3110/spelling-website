@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
     Col,
-    Row,
+    Row, Form, FormGroup, Label, Input
   } from 'reactstrap';
 
 import {
@@ -26,16 +26,18 @@ import ReactJson from 'react-json-view'
 import { Upload, message, Button } from "antd";
 import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
 
-
-
+import axios from 'axios';
+const REACT_APP_REST_ADDRESS = process.env.REACT_APP_REST_ADDRESS
+const REACT_APP_BACK_END_PORT = process.env.REACT_APP_BACK_END_PORT
+const REST_ADDRESS = 'http://' + REACT_APP_REST_ADDRESS + ":" + REACT_APP_BACK_END_PORT
 
 export default class Starter extends Component {
   constructor() {
     super()
     
     this.state = {
-        data: input.body,
-
+        data: [],
+        id: 1058,
         fileUploadState: '',
 
         uploading: false,
@@ -58,6 +60,18 @@ export default class Starter extends Component {
         
     }
   } 
+  componentDidMount() {
+    this.getWikiDocuments()
+  }
+
+  getWikiDocuments() {
+    console.log("in get wiki", this.state.id)
+    axios.get(REST_ADDRESS + '/wiki/id/' + this.state.id)
+        .then((response)=>{
+            this.setState({data: response.data})
+            // console.log(response.data)
+        })
+}
 
   makeid(length) {
       var result           = '';
@@ -201,6 +215,34 @@ export default class Starter extends Component {
     })
   }
 
+  deleteDocs(_id) {
+    // console.log(_id) 
+    axios.delete(REST_ADDRESS + '/wiki/' + _id)
+    .then((response)=>{
+        this.getWikiDocuments();
+        // console.log(response.data)
+    }).catch( function (e) {
+        console.log("can not delete docs " + _id)
+    })
+    
+}
+
+
+checkDoc(_id) {
+    const {data} =  this.state;
+    var params = data.filter((d) => d._id === _id)[0];
+    params['is_checked'] = true;
+
+    axios.post(REST_ADDRESS +'/wiki/check/' + _id, params)
+    .then((response) => {
+        this.getWikiDocuments();
+    }).catch( function (e) {
+        console.log("can not check docs " + _id);
+    })
+}
+
+
+
 
 
   render() {
@@ -211,15 +253,23 @@ export default class Starter extends Component {
     };
 
     var index = -1;
-        let items = this.state.data.map((item) => {
+    let items = this.state.data.map((item) => {
             index += 1
             return <CheckedItem documentIndex={index} 
                                 documentID={this.makeid(7)} 
+                                _id={item._id}
+                                current_id={item.current_id}
+                                parent_id={item.parent_id}
+                                page_id={item.page_id}
                                 text={item.text} 
                                 mistakes={item.mistakes}
+
+                                deleteDocs={this.deleteDocs.bind(this)}
+                                checkDoc={this.checkDoc.bind(this)}
                                 addMistakeAndCorrection={this.addMistakeAndCorrection}
                                 deleteSuggestion={this.deleteSuggestion}
                                 deleteMistake={this.deleteMistake}
+
                     />
     });
 
@@ -236,6 +286,12 @@ export default class Starter extends Component {
         <CRow>
           <CCol sm="5">
             <h4>{this.state.fileName}</h4>
+            <Form onSubmit={this.getWikiDocuments.bind(this)}>
+                    <FormGroup>
+                        <Input placeholder="add an suggestion" value={this.state.id} 
+                            onChange={(e) => this.setState({id: e.target.value})} />
+                    </FormGroup>
+                    </Form>
           </CCol>
           <CCol sm="7" className="d-none d-md-block">
             

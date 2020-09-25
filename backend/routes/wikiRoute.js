@@ -23,6 +23,21 @@ function range(start, end) {
     return Array(end - start + 1).fill().map((_, idx) => start + idx)
 }
 
+// Get documents by id 
+router.get('/id/:id', async(req, res) => {
+    const id = req.params.id;
+    
+    // each page has 50 docs
+    try{
+        // const queryResult = await wiki.find({'is_checked': false}).where('_id').in(ids).exec();
+        const queryResult = await wiki.find({'_id': id})
+        console.log("get page id " + id)
+        res.json(queryResult);
+    }catch (err) {
+        res.json({message: err});
+    }
+});
+
 // Get documents by page 
 router.get('/:page', async(req, res) => {
     const page = req.params.page;

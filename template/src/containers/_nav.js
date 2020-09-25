@@ -7,7 +7,7 @@ export default [
   },
   {
     _tag: 'CSidebarNavItem',
-    name: 'Spelling Correction',
+    name: 'Search By Mongo ID',
     to: '/spelling',
     icon: 'cil-speedometer',
   },

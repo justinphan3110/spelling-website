@@ -72,6 +72,8 @@ export default class WikiDocuments extends Component {
     componentDidMount() {
         this.getWikiDocuments();
         this.getCountCheckedDocuments();
+        setInterval(this.getCountCheckedDocuments.bind(this), 30000);
+
     }
 
 

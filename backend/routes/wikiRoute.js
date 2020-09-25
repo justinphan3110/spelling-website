@@ -28,7 +28,7 @@ router.get('/checkedDocuments', async (req, res) => {
     console.log("here")
     try{
         const queryResults = await wiki.find({is_checked: true});
-        console.log(queryResults.length)
+        // console.log(queryResults.length)
         var countMistakes = 0;
         queryResults.forEach(r => {
             countMistakes = countMistakes + r.mistakes.length

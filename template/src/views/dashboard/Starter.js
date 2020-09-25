@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
     Col,
-    Row, Form, FormGroup, Label, Input
+    Row, Form, FormGroup, Input
   } from 'reactstrap';
 
 import {
@@ -15,7 +15,7 @@ import {
   CCol,
   CModalFooter,
   CRow,
-  CModalTitle
+  CModalTitle, CBadge
 } from '@coreui/react'
 
 // import input from '.'
@@ -38,6 +38,7 @@ export default class Starter extends Component {
     this.state = {
         data: [],
         id: 1058,
+        currentID: 1058,
         fileUploadState: '',
 
         uploading: false,
@@ -68,7 +69,7 @@ export default class Starter extends Component {
     console.log("in get wiki", this.state.id)
     axios.get(REST_ADDRESS + '/wiki/id/' + this.state.id)
         .then((response)=>{
-            this.setState({data: response.data})
+            this.setState({data: response.data, currentID: this.state.id})
             // console.log(response.data)
         })
 }
@@ -285,7 +286,13 @@ checkDoc(_id) {
         <CCardBody>
         <CRow>
           <CCol sm="5">
-            <h4>{this.state.fileName}</h4>
+              <h4>{'Current Document has MongoID '} 
+                <CBadge color="warning">{this.state.currentID}</CBadge>
+                {this.state.data.length !== 0 && this.state.data[0].is_checked && <CBadge style={{marginLeft: "2%"}} color="success">Checked</CBadge>}
+                {this.state.data.length !== 0 && !this.state.data[0].is_checked && <CBadge style={{marginLeft: "2%"}} color="danger">Not Checked</CBadge>}
+
+              </h4>
+                          {/* {this.state.data} */}
             <Form onSubmit={this.getWikiDocuments.bind(this)}>
                     <FormGroup>
                         <Input placeholder="add an suggestion" value={this.state.id} 

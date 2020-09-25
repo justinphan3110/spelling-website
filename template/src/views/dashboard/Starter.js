@@ -19,7 +19,6 @@ import {
 } from '@coreui/react'
 
 // import input from '.'
-import input from '../../data/ddd.json'
 import CheckedItem from '../../components/CheckedItem';
 import ReactJson from 'react-json-view'
 

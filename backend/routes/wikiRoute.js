@@ -23,6 +23,23 @@ function range(start, end) {
     return Array(end - start + 1).fill().map((_, idx) => start + idx)
 }
 
+// Get all checked Documents
+router.get('/checkedDocuments', async (req, res) => {
+    console.log("here")
+    try{
+        const queryResults = await wiki.find({is_checked: true});
+        console.log(queryResults.length)
+        var countMistakes = 0;
+        queryResults.forEach(r => {
+            countMistakes = countMistakes + r.mistakes.length
+        })
+        res.json({"countDocs": queryResults.length, "countMistakes": countMistakes});
+    }catch(err){
+        // res.json({message:e});
+        console.log(err)
+    }
+})
+
 // Get documents by id 
 router.get('/id/:id', async(req, res) => {
     const id = req.params.id;

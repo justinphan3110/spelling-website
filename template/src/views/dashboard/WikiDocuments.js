@@ -16,7 +16,7 @@ import {
   CCol,
   CModalFooter,
   CRow,
-  CModalTitle
+  CModalTitle, CBadge, CSpinner
 } from '@coreui/react'
 
 import axios from 'axios';
@@ -44,7 +44,10 @@ export default class WikiDocuments extends Component {
                 fileName: 'Default Data',
                 viewJson: false, 
                 
-                page: 1
+                page: 1,
+
+                checkedDocuments: undefined,
+                countMistakes: undefined,
         
             }
     
@@ -68,6 +71,7 @@ export default class WikiDocuments extends Component {
 
     componentDidMount() {
         this.getWikiDocuments();
+        this.getCountCheckedDocuments();
     }
 
 
@@ -79,6 +83,17 @@ export default class WikiDocuments extends Component {
                 this.setState({data: response.data})
                 // console.log(response.data)
             })
+    }
+
+    getCountCheckedDocuments() {
+      // checkedDocuments
+      this.setState({checkedDocuments: undefined, countMistakes: undefined});
+      axios.get(REST_ADDRESS + '/wiki/checkedDocuments')
+      .then((response)=>{
+          console.log(response.data)
+          this.setState({checkedDocuments: response.data.countDocs, countMistakes:response.data.countMistakes})
+          // console.log(response.data)
+      })
     }
 
 
@@ -175,6 +190,7 @@ export default class WikiDocuments extends Component {
         axios.delete(REST_ADDRESS + '/wiki/' + _id)
         .then((response)=>{
             this.getWikiDocuments();
+            this.getCountCheckedDocuments();
             // console.log(response.data)
         }).catch( function (e) {
             console.log("can not delete docs " + _id)
@@ -190,6 +206,7 @@ export default class WikiDocuments extends Component {
         axios.post(REST_ADDRESS +'/wiki/check/' + _id, params)
         .then((response) => {
             this.getWikiDocuments();
+            this.getCountCheckedDocuments();
         }).catch( function (e) {
             console.log("can not check docs " + _id);
         })
@@ -339,7 +356,12 @@ export default class WikiDocuments extends Component {
             <CCardBody>
             <CRow>
               <CCol sm="5">
-                <h4>{this.state.fileName}</h4>
+                <h4>
+                  {(this.state.checkedDocuments && <CBadge color="success">{this.state.checkedDocuments}</CBadge>) || <CSpinner color="success" size="sm" />}
+                  {" Document Checked with "}
+                  {(this.state.countMistakes && <CBadge color="danger">{this.state.countMistakes}</CBadge>) ||  <CSpinner color="danger" size="sm" />}
+                  {" errors"}
+                </h4>
               </CCol>
               <CCol sm="7" className="d-none d-md-block">
                 

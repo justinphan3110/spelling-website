@@ -10,16 +10,20 @@ export default [
     name: 'Search By Mongo ID',
     to: '/spelling',
     icon: 'cil-speedometer',
+    badge: {
+      color: 'success',
+      text: 'NEW'
+    }
   },
   {
     _tag: 'CSidebarNavItem',
     name: 'Wiki Documents',
     to: '/wiki',
     icon: 'cil-speedometer',
-    badge: {
-      color: 'success',
-      text: 'NEW'
-    }
+    // badge: {
+    //   color: 'success',
+    //   text: 'NEW'
+    // }
   },
   // // {
   // //   _tag: 'CSidebarNavTitle',
